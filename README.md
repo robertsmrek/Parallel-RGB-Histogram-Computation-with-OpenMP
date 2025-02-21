@@ -89,7 +89,7 @@ The project consists of the following files:
 
 2. **Parallel (No Sync):** Uses OpenMP to parallelize the nested loops. All threads update the same shared histogram arrays simultaneously without protection, leading to race conditions and incorrect results.
 
-3. **Parallel (Critical):** Uses critical sections to protect the shared histogram arrays. This ensures that only one thread can update the histogram at a time, preventing
+3. **Parallel (Critical Sections):** Wraps each histogram update within a `#pragma omp critical block`, ensuring that only one thread updates the shared histogram at any given time. This prevents race conditions but may slow down the computation.
 
 4. **Parallel (Local Histograms):** Each thread computes its own local histograms for each channel. After all threads finish, the local histograms are merged into the final histograms. This approach minimizes contention and is usually the best performance/accuracy trade-off.
 
