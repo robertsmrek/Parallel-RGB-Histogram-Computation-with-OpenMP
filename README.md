@@ -85,21 +85,21 @@ The project consists of the following files:
 
 ### Histogram Computation Approaches
 
-1. **Sequential:** The baseline approach computes the histograms sequentially without any parallelization. It calculates the histograms for each channel (R, G, B) and the combined RGB histogram.
+1. **Sequential:** Loops over each pixel and updates the R, G, and B histogram arrays directly. No race conditions since it runs on a single thread. This method serves as the correctness baseline.
 
 2. **Parallel (No Sync):** Uses OpenMP to parallelize the nested loops. All threads update the same shared histogram arrays simultaneously without protection, leading to race conditions and incorrect results.
 
 3. **Parallel (Critical Sections):** Wraps each histogram update within a `#pragma omp critical` block, ensuring that only one thread updates the shared histogram at any given time. This prevents race conditions but may slow down the computation.
 
-4. **Parallel (Local Histograms):** Each thread computes its own local histograms for each channel. After all threads finish, the local histograms are merged into the final histograms. This approach minimizes contention and is usually the best performance/accuracy trade-off.
+4. **Parallel (Local Histograms):** Each thread maintains its own local histogram arrays (private copies), avoiding race conditions during the pixel processing. After the parallel loop, these local histograms are merged into the global arrays. This method is typically the fastest correct approach.
 
 ### Synchronization Techniques
 
--   **No Synchronization:** This approach demonstrates the effects
+-   **No Synchronization:** Fast but produces incorrect results due to concurrent, unsynchronized updates. This approach demonstrates the importance of proper synchronization.
 
--   **Critical Sections:** Uses `#pragma omp critical` to protect the shared histogram arrays. This ensures that only one thread can update the histogram at a time, preventing
+-   **Critical Sections:** Ensures correctness by serializing access to the histogram arrays, at the cost of potential performance loss due to contention.
 
--   **Local Histograms:** Each thread computes its own local histograms for each channel. After all threads finish, the local histograms are merged into the final histograms. This approach minimizes contention and is usually the best performance/accuracy trade-off.
+-   **Local Histograms:** Minimizes synchronization overhead by deferring the merging of results until after the parallel processing is complete. Each thread computes its own local histograms, which are then combined into the final histograms.
 
 ## Output Explanation
 
@@ -115,4 +115,4 @@ The histograms are displayed using OpenCV's `cv::plot::plotBars` function, which
 
 ## Notes and Extensions
 
--   **Performance:** The parallel (local histograms) approach is usually the best performance/accuracy trade-off. It minimizes contention by having each thread compute its own local histograms, which are then merged into the final histograms
+-   **Performance:** The parallel (local histograms) approach is usually the best performance/accuracy trade-off. It minimizes contention by having each thread compute its own local histograms, which are then merged into the final histograms. This approach can be extended to other parallel programming models (e.g., MPI, CUDA).
