@@ -12,7 +12,7 @@ CXXFLAGS = $(OPENCV_CFLAGS) -Wall -O2 -fopenmp
 TARGET = histogram
 
 # Source Files
-SRC = hist.cpp
+SRC = histogram.cpp
 
 # Compilation Rule
 all: $(TARGET)
