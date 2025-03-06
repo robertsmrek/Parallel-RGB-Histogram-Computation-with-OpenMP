@@ -6,7 +6,7 @@
 #include <omp.h>
 
 // --------------------------------------------------------------------------------
-// 1. Utility Functions for Histogram Arrays
+// Utility Functions for Histogram Arrays
 // --------------------------------------------------------------------------------
 
 inline void initHist3(int hist_r[256], int hist_g[256], int hist_b[256])
@@ -53,10 +53,10 @@ inline void computeTotalAbsDiff(const int ref_r[256], const int ref_g[256], cons
 }
 
 // --------------------------------------------------------------------------------
-// 2. Histogram Display Functions
+// Histogram Display Functions
 // --------------------------------------------------------------------------------
 
-// A. Single-channel histogram (256 bins).
+// Single-channel histogram (256 bins).
 void displayHistogram(const int hist[256], const std::string &winName, cv::Scalar color)
 {
     int hist_w = 512, hist_h = 400;
@@ -83,7 +83,7 @@ void displayHistogram(const int hist[256], const std::string &winName, cv::Scala
     cv::imshow(winName, histImage);
 }
 
-// B. Combined R/G/B histogram on one chart.
+// Combined R/G/B histogram on one chart.
 void displayCombinedHistogram(const int hist_r[256],
                               const int hist_g[256],
                               const int hist_b[256],
@@ -126,7 +126,7 @@ void displayCombinedHistogram(const int hist_r[256],
     cv::imshow(winName, histImage);
 }
 
-// C. Hue histogram (0..179), colored by hue.
+// Hue histogram (0..179), colored by hue.
 void displayHueHistogram(const cv::Mat &hueHist, const std::string &windowName)
 {
     int histSize = hueHist.rows; // typically 180
@@ -160,10 +160,10 @@ void displayHueHistogram(const cv::Mat &hueHist, const std::string &windowName)
 }
 
 // --------------------------------------------------------------------------------
-// 3. Histogram Computation Functions
+// Histogram Computation Functions
 // --------------------------------------------------------------------------------
 
-// A. Sequential
+// Sequential
 void computeHistogramSequential(const cv::Mat &img, int hist_r[256], int hist_g[256], int hist_b[256])
 {
     initHist3(hist_r, hist_g, hist_b);
@@ -180,7 +180,7 @@ void computeHistogramSequential(const cv::Mat &img, int hist_r[256], int hist_g[
     }
 }
 
-// B. Parallel No Sync
+// Parallel No Sync
 void computeHistogramParallelNoSync(const cv::Mat &img, int hist_r[256], int hist_g[256], int hist_b[256])
 {
     initHist3(hist_r, hist_g, hist_b);
@@ -199,7 +199,7 @@ void computeHistogramParallelNoSync(const cv::Mat &img, int hist_r[256], int his
     }
 }
 
-// C. Parallel with Critical
+// Parallel with Critical
 void computeHistogramParallelCritical(const cv::Mat &img, int hist_r[256], int hist_g[256], int hist_b[256])
 {
     initHist3(hist_r, hist_g, hist_b);
@@ -220,7 +220,7 @@ void computeHistogramParallelCritical(const cv::Mat &img, int hist_r[256], int h
     }
 }
 
-// D. Parallel with Local Histograms
+// Parallel with Local Histograms
 void computeHistogramParallelLocal(const cv::Mat &img, int hist_r[256], int hist_g[256], int hist_b[256])
 {
     initHist3(hist_r, hist_g, hist_b);
@@ -259,7 +259,7 @@ void computeHistogramParallelLocal(const cv::Mat &img, int hist_r[256], int hist
 }
 
 // --------------------------------------------------------------------------------
-// 4. Main
+// Main
 // --------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -286,28 +286,28 @@ int main(int argc, char *argv[])
     int hist_r_crit[256], hist_g_crit[256], hist_b_crit[256];
     int hist_r_local[256], hist_g_local[256], hist_b_local[256];
 
-    // 1) Sequential
+    // Sequential
     auto start = std::chrono::high_resolution_clock::now();
     computeHistogramSequential(img, hist_r_seq, hist_g_seq, hist_b_seq);
     auto end = std::chrono::high_resolution_clock::now();
     double time_seq = std::chrono::duration<double, std::milli>(end - start).count();
     std::cout << "Sequential execution time: " << time_seq << " ms" << std::endl;
 
-    // 2) Parallel No Sync
+    // Parallel No Sync
     start = std::chrono::high_resolution_clock::now();
     computeHistogramParallelNoSync(img, hist_r_unsync, hist_g_unsync, hist_b_unsync);
     end = std::chrono::high_resolution_clock::now();
     double time_unsync = std::chrono::duration<double, std::milli>(end - start).count();
     std::cout << "Parallel (no sync) execution time: " << time_unsync << " ms" << std::endl;
 
-    // 3) Parallel Critical
+    // Parallel Critical
     start = std::chrono::high_resolution_clock::now();
     computeHistogramParallelCritical(img, hist_r_crit, hist_g_crit, hist_b_crit);
     end = std::chrono::high_resolution_clock::now();
     double time_crit = std::chrono::duration<double, std::milli>(end - start).count();
     std::cout << "Parallel (critical) execution time: " << time_crit << " ms" << std::endl;
 
-    // 4) Parallel Local
+    // Parallel Local
     start = std::chrono::high_resolution_clock::now();
     computeHistogramParallelLocal(img, hist_r_local, hist_g_local, hist_b_local);
     end = std::chrono::high_resolution_clock::now();
