@@ -197,7 +197,7 @@ void computeHistogramSequential(const cv::Mat &img, int hist_r[256], int hist_g[
     }
 }
 
-/**S
+/**
  * Parallel histogram computation without synchronization
  *
  * This version processes pixels in parallel without any thread synchronization.
